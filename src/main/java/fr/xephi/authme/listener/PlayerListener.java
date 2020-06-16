@@ -172,6 +172,11 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
+        if (player.isInsideVehicle() && player.getVehicle() != null)
+        {
+            player.getVehicle().eject();
+        }
+
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
         }
