@@ -169,12 +169,12 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-
-        if (player.isInsideVehicle() && player.getVehicle() != null)
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        Player player = event.getPlayer();
+        if (player != null && player.isInsideVehicle())
         {
-            player.getVehicle().eject();
+            player.eject();
         }
 
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
@@ -223,8 +223,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
         Player player = event.getPlayer();
+        if (player != null && player.isInsideVehicle())
+        {
+            player.eject();
+            //player.getVehicle().eject();
+        }
 
         // Note: quit message can be null, despite api documentation says not
         if (settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)) {
@@ -243,7 +249,15 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerKick(PlayerKickEvent event) {
+    public void onPlayerKick(PlayerKickEvent event)
+    {
+        Player player = event.getPlayer();
+        if (player != null && player.isInsideVehicle())
+        {
+            player.eject();
+            //player.getVehicle().eject();
+        }
+
         // Note #831: Especially for offline CraftBukkit, we need to catch players being kicked because of
         // "logged in from another location" and to cancel their kick
         if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
@@ -252,7 +266,6 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final Player player = event.getPlayer();
         if (!antiBotService.wasPlayerKicked(player.getName())) {
             management.performQuit(player);
         }
